@@ -46,5 +46,24 @@ namespace RandomForest
 
             return prediction / Trees.Count;
         }
+
+        public double Predict(Dictionary<string, string> row)
+        {
+            var realRow = new Dictionary<string, double>();
+
+            foreach (var item in row)
+            {
+                if (double.TryParse(item.Value, out var dbl))
+                {
+                    realRow[item.Key] = dbl;
+                }
+                else
+                {
+                    realRow[item.Key + item.Value] = 1;
+                }
+            }
+
+            return Predict(realRow);
+        }
     }
 }
