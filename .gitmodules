@@ -1,0 +1,3 @@
+[submodule "RandomForest.Sample"]
+	path = RandomForest.Sample
+	url = https://github.com/g3rv4/RandomForest.Sample
