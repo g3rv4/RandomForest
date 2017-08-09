@@ -47,7 +47,7 @@ double predictedValue = randomForest.Predict(row);
 A more efficient alternative (because it doesn't need to parse the string to double) receives a `Dictionary<string, double>`. The key of the dictionary should be the variable name and the value when the variable type is not a double. Here's an example:
 
 ```
-var row = new Dictionary<string, string> {
+var row = new Dictionary<string, double> {
     ["NameGervasio Marchand"] = 1,
     ["Age"] = 34
 }
