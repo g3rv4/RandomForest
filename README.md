@@ -1,6 +1,6 @@
 ﻿RandomForest
 ===
-A simple implementation of a random forest in C#. *Only supporting regression, I'll add classification features soon... or you can just send me a PR :)*
+A simple implementation of a random forest in C#.
 
 ## What is this?
 This is a tiny library that knows how to parse [PMML random forests](http://dmg.org/pmml/v4-3/TreeModel.html) and build predictions from them. If you want to train a model, then this library is not for you and you may be looking for something more like [Accord.NET](http://accord-framework.net/).
@@ -26,7 +26,7 @@ r2pmml(my_model, "my_model.pmml")
 And that will generate a `my_model.pmml` that you can feed this library using:
 
 ```
-Forest randomForest;
+RegressionRandomForest randomForest; // If you have a classification random forest, then use the ClassificationRandomForest class instead
 using (XmlReader reader = XmlReader.Create("my_model.pmml"))
 {
     randomForest = new Forest(reader);

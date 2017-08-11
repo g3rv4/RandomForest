@@ -5,7 +5,7 @@ using System.Xml.Linq;
 
 namespace RandomForest
 {
-    internal class DecisionTree
+    internal abstract class DecisionTree<T>
     {
         private TreeNode Root { get; set; }
 
@@ -16,10 +16,12 @@ namespace RandomForest
 
         internal DecisionTree(XElement element)
         {
-            Root = new TreeNode(element);
+            Root = new TreeNode(element, GetParseFunction());
         }
 
-        internal double Predict(Dictionary<string, double> row)
+        protected abstract Func<string, T> GetParseFunction();
+
+        internal T Predict(Dictionary<string, double> row)
         {
             return Root.Predict(row);
         }
@@ -31,19 +33,21 @@ namespace RandomForest
             public TreeNode Left { get; set; }
             public TreeNode Right { get; set; }
 
-            public double? Prediction { get; set; }
+            public bool HasPrediction { get; set; }
+            public T Prediction { get; set; }
 
             private TreeNode()
             {
                 // protobuf
             }
 
-            public TreeNode(XElement element)
+            public TreeNode(XElement element, Func<string, T> parseFunction)
             {
                 Id = int.Parse(element.Attribute("id").Value);
                 if (element.Attribute("score") != null)
                 {
-                    Prediction = double.Parse(element.Attribute("score").Value);
+                    HasPrediction = true;
+                    Prediction = parseFunction(element.Attribute("score").Value);
                 }
 
                 var a1 = element.Elements();
@@ -52,20 +56,20 @@ namespace RandomForest
                 var tempNode = a1.Skip(1).FirstOrDefault();
                 if (tempNode != null)
                 {
-                    Left = new TreeNode(tempNode);
+                    Left = new TreeNode(tempNode, parseFunction);
                     tempNode = a1.Skip(2).FirstOrDefault();
                     if (tempNode != null)
                     {
-                        Right = new TreeNode(tempNode);
+                        Right = new TreeNode(tempNode, parseFunction);
                     }
                 }
             }
 
-            public double Predict(Dictionary<string, double> row)
+            public T Predict(Dictionary<string, double> row)
             {
-                if (Prediction.HasValue)
+                if (HasPrediction)
                 {
-                    return Prediction.Value;
+                    return Prediction;
                 }
                 if (Left != null && Left.Predicate.Matches(row))
                 {
@@ -77,6 +81,25 @@ namespace RandomForest
                 }
                 throw new Exception("Invalid decision tree... leaf doesn't have a prediction");
             }
+        }
+    }
+    internal class ClassificationDecisionTree : DecisionTree<string>
+    {
+        internal ClassificationDecisionTree(XElement element) : base(element) { }
+
+        protected override Func<string, string> GetParseFunction()
+        {
+            return (string s) => s;
+        }
+    }
+
+    internal class RegressionDecisionTree : DecisionTree<double>
+    {
+        internal RegressionDecisionTree(XElement element) : base(element) { }
+
+        protected override Func<string, double> GetParseFunction()
+        {
+            return (string s) => double.Parse(s);
         }
     }
 }
