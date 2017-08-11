@@ -10,7 +10,15 @@ namespace RandomForest
 {
     public abstract class RandomForest<T>
     {
+        protected enum ForestType
+        {
+            Unknown,
+            Regression,
+            Classification
+        }
+
         internal List<DecisionTree<T>> Trees { get; set; }
+        protected ForestType Type { get; set; }
 
         private RandomForest()
         {
@@ -18,6 +26,7 @@ namespace RandomForest
         }
 
         internal abstract DecisionTree<T> NewDecisionTree(XElement element);
+        internal abstract void ValidateRandomForestData();
 
         public RandomForest(XmlReader reader)
         {
@@ -25,8 +34,26 @@ namespace RandomForest
 
             ReadDataFields(reader);
 
-            reader.ReadToFollowing("Segment");
+            reader.ReadToFollowing("MiningModel");
+            if(reader.Name == "MiningModel")
+            {
+                switch (reader.GetAttribute("functionName"))
+                {
+                    case "regression":
+                        Type = ForestType.Regression;
+                        break;
+                    case "classification":
+                        Type = ForestType.Classification;
+                        break;
+                    default:
+                        Type = ForestType.Unknown;
+                        break;
+                }
+            }
 
+            ValidateRandomForestData();
+
+            reader.ReadToFollowing("Segment");
             while (reader.Name == "Segment")
             {
                 reader.ReadToFollowing("Node");
@@ -64,6 +91,14 @@ namespace RandomForest
     {
         public RegressionRandomForest(XmlReader reader) : base(reader) { }
 
+        internal override void ValidateRandomForestData()
+        {
+            if (Type != ForestType.Regression)
+            {
+                throw new Exception("Wrong class... the random forest you're trying to load does not do regression.");
+            }
+        }
+
         internal override DecisionTree<double> NewDecisionTree(XElement element)
         {
             return new RegressionDecisionTree(element);
@@ -93,6 +128,14 @@ namespace RandomForest
         private List<string> Values { get; set; }
 
         public ClassificationRandomForest(XmlReader reader) : base(reader) { }
+
+        internal override void ValidateRandomForestData()
+        {
+            if (Type != ForestType.Classification)
+            {
+                throw new Exception("Wrong class... the random forest you're trying to load does not do classification.");
+            }
+        }
 
         internal override DecisionTree<string> NewDecisionTree(XElement element)
         {
