@@ -180,5 +180,43 @@ namespace RandomForest
             var maxPosition = Array.IndexOf(predictions, predictions.Max());
             return Values[maxPosition];
         }
+
+        public Dictionary<string, double> GetProbabilities(Dictionary<string, string> row)
+        {
+            var realRow = new Dictionary<string, double>();
+
+            foreach (var item in row)
+            {
+                if (double.TryParse(item.Value, out var dbl))
+                {
+                    realRow[item.Key] = dbl;
+                }
+                else
+                {
+                    realRow[item.Key + item.Value] = 1;
+                }
+            }
+
+            return GetProbabilities(realRow);
+        }
+
+        public Dictionary<string, double> GetProbabilities(Dictionary<string, double> row)
+        {
+            int[] predictions = new int[Values.Count];
+
+            Parallel.ForEach(Trees, (currentTree) =>
+            {
+                var p = currentTree.Predict(row);
+                Interlocked.Increment(ref predictions[ValuePositionLookup[p]]);
+            });
+
+            var res = new Dictionary<string, double>();
+            for (var i = 0; i < predictions.Length; i++)
+            {
+                res[Values[i]] = predictions[i] / (double)Trees.Count;
+            }
+
+            return res;
+        }
     }
 }

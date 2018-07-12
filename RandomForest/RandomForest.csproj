@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net452;netstandard1.3</TargetFrameworks>
-    <Version>0.2.1</Version>
+    <Version>0.2.2</Version>
     <Authors>Gervasio Marchand Cassataro</Authors>
     <Company />
     <Description>A library to productionize R random forests</Description>
@@ -15,6 +15,7 @@
     <PackageProjectUrl>https://github.com/g3rv4/RandomForest</PackageProjectUrl>
     <RepositoryUrl>https://github.com/g3rv4/RandomForest</RepositoryUrl>
     <Product>Random Forest</Product>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
