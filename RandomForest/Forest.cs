@@ -28,11 +28,11 @@ namespace RandomForest
         internal abstract DecisionTree<T> NewDecisionTree(XElement element);
         internal abstract void ValidateRandomForestData();
 
-        public RandomForest(XmlReader reader)
+        public RandomForest(XmlReader reader, string targetDataField = "_target")
         {
             Trees = new List<DecisionTree<T>>();
 
-            ReadDataFields(reader);
+            ReadDataFields(reader, targetDataField);
 
             reader.ReadToFollowing("MiningModel");
             if(reader.Name == "MiningModel")
@@ -63,7 +63,7 @@ namespace RandomForest
             }
         }
 
-        protected virtual void ReadDataFields(XmlReader reader) { }
+        protected virtual void ReadDataFields(XmlReader reader, string targetDataField) { }
 
         public abstract T Predict(Dictionary<string, double> row);
 
@@ -89,7 +89,7 @@ namespace RandomForest
 
     public class RegressionRandomForest : RandomForest<double>
     {
-        public RegressionRandomForest(XmlReader reader) : base(reader) { }
+        public RegressionRandomForest(XmlReader reader, string targetDataField = "_target") : base(reader, targetDataField) { }
 
         internal override void ValidateRandomForestData()
         {
@@ -127,7 +127,7 @@ namespace RandomForest
         private Dictionary<string, int> ValuePositionLookup { get; set; }
         private List<string> Values { get; set; }
 
-        public ClassificationRandomForest(XmlReader reader) : base(reader) { }
+        public ClassificationRandomForest(XmlReader reader, string targetDataField = "_target") : base(reader, targetDataField) { }
 
         internal override void ValidateRandomForestData()
         {
@@ -142,7 +142,7 @@ namespace RandomForest
             return new ClassificationDecisionTree(element);
         }
 
-        protected override void ReadDataFields(XmlReader reader)
+        protected override void ReadDataFields(XmlReader reader, string targetDataField)
         {
             ValuePositionLookup = new Dictionary<string, int>();
             Values = new List<string>();
@@ -150,7 +150,7 @@ namespace RandomForest
             reader.ReadToFollowing("DataField");
             while (reader.Name == "DataField")
             {
-                if(reader.GetAttribute("name") == "_target")
+                if(reader.GetAttribute("name") == targetDataField)
                 {
                     reader.ReadToDescendant("Value");
                     while (reader.Name == "Value")
