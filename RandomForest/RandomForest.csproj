@@ -2,15 +2,15 @@
 
   <PropertyGroup>
     <TargetFrameworks>net452;netstandard1.3</TargetFrameworks>
-    <Version>0.2.2</Version>
+    <Version>0.2.3</Version>
     <Authors>Gervasio Marchand Cassataro</Authors>
     <Company />
     <Description>A library to productionize R random forests</Description>
     <Copyright>2017 Gervasio Marchand Cassataro</Copyright>
     <PackageTags>DataScience Rstats RandomForest</PackageTags>
     <PackageReleaseNotes>One allocation less per tree is always a good thing. It also now recognizes wrong tree types</PackageReleaseNotes>
-    <AssemblyVersion>0.2.1.0</AssemblyVersion>
-    <FileVersion>0.2.1.0</FileVersion>
+    <AssemblyVersion>0.2.3.0</AssemblyVersion>
+    <FileVersion>0.2.3.0</FileVersion>
     <PackageLicenseUrl>https://github.com/g3rv4/RandomForest/blob/master/LICENSE.md</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/g3rv4/RandomForest</PackageProjectUrl>
     <RepositoryUrl>https://github.com/g3rv4/RandomForest</RepositoryUrl>
